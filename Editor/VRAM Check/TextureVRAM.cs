@@ -464,10 +464,6 @@ namespace Voy.AvatarHelpers
         long _sizeAll;
         long _sizeAllTextures;
         long _sizeAllMeshes;
-        //AvatarEvaluator.Quality _pcTextureQuality;
-        //AvatarEvaluator.Quality _questTextureQuality;
-        //AvatarEvaluator.Quality _pcMeshQuality;
-        //AvatarEvaluator.Quality _questMeshQuality;
         bool _includeInactive = true;
         List<TextureInfo> _texturesList;
         List<MeshInfo> _meshesList;
@@ -931,11 +927,6 @@ namespace Voy.AvatarHelpers
                 _meshesList.Sort((m1, m2) => m2.size.CompareTo(m1.size));
                 _sizeAll = _sizeAllTextures + _sizeAllMeshes;
 
-                // Assign quality
-                //_pcTextureQuality = GetTextureQuality(_sizeAllTextures, false);
-                //_pcMeshQuality = GetMeshQuality(_sizeAllMeshes, false);
-                //_questTextureQuality = GetTextureQuality(_sizeAllTextures, true);
-                //_questMeshQuality = GetMeshQuality(_sizeAllMeshes, true);
             } finally {
                 EditorUtility.ClearProgressBar();
             }
@@ -943,37 +934,6 @@ namespace Voy.AvatarHelpers
             return _sizeAll;
         }
 
-        /*
-        public static AvatarEvaluator.Quality GetTextureQuality(long size, bool quest)
-        {
-            if (quest)
-                return GetQuality(size, QUEST_TEXTURE_MEMORY_EXCELLENT_MiB, QUEST_TEXTURE_MEMORY_GOOD_MiB, QUEST_TEXTURE_MEMORY_MEDIUM_MiB, QUEST_TEXTURE_MEMORY_POOR_MiB);
-            else
-                return GetQuality(size, PC_TEXTURE_MEMORY_EXCELLENT_MiB, PC_TEXTURE_MEMORY_GOOD_MiB, PC_TEXTURE_MEMORY_MEDIUM_MiB, PC_TEXTURE_MEMORY_POOR_MiB);
-        }
-
-        public static AvatarEvaluator.Quality GetMeshQuality(long size, bool quest)
-        {
-            if (quest)
-                return GetQuality(size, QUEST_MESH_MEMORY_EXCELLENT_MiB, QUEST_MESH_MEMORY_GOOD_MiB, QUEST_MESH_MEMORY_MEDIUM_MiB, QUEST_MESH_MEMORY_POOR_MiB);
-            else
-                return GetQuality(size, PC_MESH_MEMORY_EXCELLENT_MiB, PC_MESH_MEMORY_GOOD_MiB, PC_MESH_MEMORY_MEDIUM_MiB, PC_MESH_MEMORY_POOR_MiB);
-        }
-
-        static AvatarEvaluator.Quality GetQuality(long size, long excellent, long good, long medium, long poor)
-        {
-            if (size < excellent * 1048576)
-                return AvatarEvaluator.Quality.Excellent;
-            else if (size < good * 1048576)
-                return AvatarEvaluator.Quality.Good;
-            else if (size < medium * 1048576)
-                return AvatarEvaluator.Quality.Medium;
-            else if (size < poor * 1048576)
-                return AvatarEvaluator.Quality.Poor;
-            else
-                return AvatarEvaluator.Quality.VeryPoor;
-        }
-        */
         static Dictionary<Mesh, long> meshSizeCache = new Dictionary<Mesh, long>();
 
         static long CalculateMeshSize(Mesh mesh)

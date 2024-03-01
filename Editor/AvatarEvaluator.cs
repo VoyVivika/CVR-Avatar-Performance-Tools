@@ -41,43 +41,6 @@ namespace Voy.AvatarHelpers {
             window._avatar = Selection.activeGameObject;
             window.Show();
         }
-        /*
-        
-        None of this is necessary for ChilloutVR, Commenting for Removal.
-
-        public const string GUID_EXCELLENT_ICON = "644caf5607820c7418cf0d248b12f33b";
-        public const string GUID_GOOD_ICON = "4109d4977ddfb6548b458318e220ac70";
-        public const string GUID_MEDIUM_ICON = "9296abd40c7c1934cb668aae07b41c69";
-        public const string GUID_POOR_ICON = "e561d0406779ab948b7f155498d101ee";
-        public const string GUID_VERY_POOR_ICON = "2886eb1248200a94d9eaec82336fbbad";
-
-        public enum Quality { Excellent, Good, Medium, Poor, VeryPoor }
-
-        static Texture2D ICON_EXCELLENT => AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(GUID_EXCELLENT_ICON));
-        static Texture2D ICON_GOOD => AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(GUID_GOOD_ICON));
-        static Texture2D ICON_MEDIUM => AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(GUID_MEDIUM_ICON));
-        static Texture2D ICON_POOR => AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(GUID_POOR_ICON));
-        static Texture2D ICON_VERY_POOR => AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GUIDToAssetPath(GUID_VERY_POOR_ICON)); 
-
-        
-        const int GRABPASS_LIMIT_EXCELLENT = 0;
-        const int GRABPASS_LIMIT_MEDIUM = 1;
-
-        const int ANYSTATE_LIMIT_EXCELLENT = 50;
-        const int ANYSTATE_LIMIT_GOOD = 80;
-        const int ANYSTATE_LIMIT_MEDIUM = 100;
-        const int ANYSTATE_LIMIT_POOR = 150;
-
-        const int BLENDSHAPE_DATA_LIMIT_EXCELLENT = 8000;
-        const int BLENDSHAPE_DATA_LIMIT_GOOD = 16000;
-        const int BLENDSHAPE_DATA_LIMIT_MEDIUM = 32000;
-        const int BLENDSHAPE_DATA_LIMIT_POOR = 50000;
-
-        const int LAYER_LIMIT_EXCELLENT = 12;
-        const int LAYER_LIMIT_GOOD = 20;
-        const int LAYER_LIMIT_MEDIUM = 30;
-        const int LAYER_LIMIT_POOR = 45;
-        */
 
         GUIContent refreshIcon;
 
@@ -89,23 +52,18 @@ namespace Voy.AvatarHelpers {
 
         //eval variables
         long _vramSize = 0;
-        //Quality _vramQuality = Quality.Excellent;
 
         int _grabpassCount = 0;
-        //Quality _grabpassQuality = Quality.Excellent;
         bool _grabpassFoldout = false;
 
         (SkinnedMeshRenderer renderer, int verticies, int blendshapeCount)[] _skinendMeshesWithBlendshapes;
         long _totalBlendshapeVerticies = 0;
-        //Quality _blendshapeQuality = Quality.Excellent;
         bool _blendshapeFoldout;
 
         int _anyStateTransitions = 0;
-        //Quality _anyStateTransitionsQuality = Quality.Excellent;
         bool _anyStateFoldout = false;
 
         int _layerCount = 0;
-        //Quality _layerCountQuality = Quality.Excellent;
         bool _layerCountFoldout = false;
 
         Shader[] _shadersWithGrabpass;
@@ -138,7 +96,6 @@ namespace Voy.AvatarHelpers {
             EditorGUI.BeginChangeCheck();
             using (new EditorGUILayout.HorizontalScope())
             {
-                //GUILayout.Label("Avatar", GUILayout.Width(40));
                 GUI.enabled = _avatar != null;
                 if(GUILayout.Button(refreshIcon, GUILayout.Width(30), GUILayout.Height(30))) {
                     Evaluate();
@@ -361,52 +318,6 @@ namespace Voy.AvatarHelpers {
                 }
             }
         }
-        /*
-        public static void DrawQualityIcon()
-        {
-            GUI.DrawTexture(EditorGUILayout.GetControlRect(false, 16, GUILayout.Width(16), GUILayout.Height(16)), 
-                AvatarEvaluator.GetQualityIcon(type));
-        }
-
-        public static Texture2D GetQualityIcon()
-        {
-            Texture2D icon = ICON_VERY_POOR;
-            switch (type)
-            {
-                case Quality.VeryPoor:
-                    icon = ICON_VERY_POOR;
-                    break;
-                case Quality.Poor:
-                    icon = ICON_POOR;
-                    break;
-                case Quality.Medium:
-                    icon = ICON_MEDIUM;
-                    break;
-                case Quality.Good:
-                    icon = ICON_GOOD;
-                    break;
-                case Quality.Excellent:
-                    icon = ICON_EXCELLENT;
-                    break;
-            }
-            return icon;
-        }
-
-        static Quality GetQuality(long value, long excellent, long good, long medium, long poor)
-        {
-            if (value < excellent)
-                return AvatarEvaluator.Quality.Excellent;
-            else if (value < good)
-                return AvatarEvaluator.Quality.Good;
-            else if (value < medium)
-                return AvatarEvaluator.Quality.Medium;
-            else if (value < poor)
-                return AvatarEvaluator.Quality.Poor;
-            else
-                return AvatarEvaluator.Quality.VeryPoor;
-        }
-
-        */
         
         void DrawLine(int i_height)
         {
@@ -418,12 +329,10 @@ namespace Voy.AvatarHelpers {
         void Evaluate()
         {
             _vramSize = TextureVRAM.QuickCalc(_avatar);
-            //_vramQuality = TextureVRAM.GetTextureQuality(_vramSize, false);
             IEnumerable<Material> materials = GetMaterials(_avatar)[1];
             IEnumerable<Shader> shaders = materials.Where(m => m!= null && m.shader != null).Select(m => m.shader).Distinct();
             _shadersWithGrabpass = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) &&  Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"GrabPass\s*{\s*""(\w|_)+""\s+}").Success ).ToArray();
             _grabpassCount = _shadersWithGrabpass.Count();
-            //_grabpassQuality = _grabpassCount > GRABPASS_LIMIT_MEDIUM ? Quality.VeryPoor : _grabpassCount > GRABPASS_LIMIT_EXCELLENT ? Quality.Medium : Quality.Excellent;
 #if CVR_CCK_EXISTS
             CVRAvatar descriptor = _avatar.GetComponent<CVRAvatar>();
 
@@ -432,7 +341,6 @@ namespace Voy.AvatarHelpers {
             IEnumerable<AnimatorControllerLayer> layers = controller.layers.Where(l => l != null);
             IEnumerable<AnimatorStateMachine> statesMachines = layers.Select(l => l.stateMachine).Where(s => s != null);
             _anyStateTransitions = statesMachines.SelectMany(l => l.anyStateTransitions).Count();
-            //_anyStateTransitionsQuality = GetQuality(_anyStateTransitions, ANYSTATE_LIMIT_EXCELLENT, ANYSTATE_LIMIT_GOOD, ANYSTATE_LIMIT_MEDIUM, ANYSTATE_LIMIT_POOR);
             IEnumerable<(AnimatorState,string)> states = statesMachines.SelectMany(m => m.states.Select(s => (s.state, m.name+"/"+s.state.name)));
 
             _emptyStates = states.Where(s => s.Item1.motion == null).Select(s => s.Item2).ToArray();
@@ -444,12 +352,10 @@ namespace Voy.AvatarHelpers {
             else _writeDefaultoutliers = wdOn.Select(s => s.Item2).ToArray();
 
             _layerCount = layers.Count();
-            //_layerCountQuality = GetQuality(_layerCount, LAYER_LIMIT_EXCELLENT, LAYER_LIMIT_GOOD, LAYER_LIMIT_MEDIUM, LAYER_LIMIT_POOR);
 #endif
 
             _skinendMeshesWithBlendshapes =  _avatar.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(r => r.sharedMesh != null && r.sharedMesh.blendShapeCount > 0).Select(r => (r, r.sharedMesh.triangles.Length / 3, r.sharedMesh.blendShapeCount)).OrderByDescending(i => i.Item2).ToArray();
             _totalBlendshapeVerticies = _skinendMeshesWithBlendshapes.Sum(i => i.verticies);
-            //_blendshapeQuality = GetQuality(_totalBlendshapeVerticies, BLENDSHAPE_DATA_LIMIT_EXCELLENT, BLENDSHAPE_DATA_LIMIT_GOOD, BLENDSHAPE_DATA_LIMIT_MEDIUM, BLENDSHAPE_DATA_LIMIT_POOR);
         }
 
         public static IEnumerable<Material>[] GetMaterials(GameObject avatar)
