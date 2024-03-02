@@ -71,9 +71,11 @@ namespace Voy.AvatarHelpers {
         bool _materialCountFoldout = false;
 
         Shader[] _shadersWithGrabpass;
-        Shader[] _shadersWithoutSPSI;
 
-        int _nonSPSIShaders = 0;
+        bool _shaderSPSIFoldout = false;
+        Shader[] _shadersWithSPSI;
+        Shader[] _shadersWithoutSPSI;
+        int _nonSPSIShaderCount = 0;
 
         //write defaults
         bool _writeDefault;
@@ -156,6 +158,14 @@ namespace Voy.AvatarHelpers {
                 {
 
                     DrawMaterialSlots();
+
+                }
+
+                _shaderSPSIFoldout = DrawSection("Non-SPSI Shaders", _nonSPSIShaderCount.ToString(), _shaderSPSIFoldout);
+                if (_shaderSPSIFoldout)
+                {
+
+                    DrawSPSIFoldout();
 
                 }
 
@@ -293,6 +303,42 @@ namespace Voy.AvatarHelpers {
             }
         }
 
+        void DrawSPSIFoldout()
+        {
+            using (new DetailsFoldout("ChilloutVR uses Single-Pass Stereo Instanced Rendering in VR Mode. The Shaders you" +
+                " use on your Avatar should support this, if not the Avatar will not Appear in the Right Eye (except in Mirrors). " +
+                "it is Highly Advised you either Fix This or Choose a Different Shader."))
+            {
+
+                EditorGUILayout.HelpBox("Please Ignore Built-In Unity Shaders like Standard. That is a bug that I am looking into fixing.", MessageType.Info);
+
+                IEnumerable<Material> materials = GetMaterials(_avatar)[1];
+
+                EditorGUILayout.Space();
+                EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField("Shaders");
+
+                EditorGUILayout.EndHorizontal();
+
+                foreach (Shader shader in _shadersWithoutSPSI)
+                {
+
+                        EditorGUILayout.BeginHorizontal();
+
+                        EditorGUILayout.ObjectField(shader, typeof(Shader), true);
+
+                        EditorGUILayout.EndHorizontal();
+
+                    
+                }
+
+            }
+
+
+
+        }
+
         void DrawMaterialSlots()
         {
             using (new DetailsFoldout("For each material slot you have on your Avatar your CPU needs to call on your " +
@@ -414,8 +460,9 @@ namespace Voy.AvatarHelpers {
             _shadersWithGrabpass = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) &&  Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"GrabPass\s*{\s*""(\w|_)+""\s+}").Success ).ToArray();
             _grabpassCount = _shadersWithGrabpass.Count();
 
-            _shadersWithoutSPSI = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) && Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO\([^)]*\);").Success).ToArray();
-            _nonSPSIShaders = _shadersWithoutSPSI.Count();
+            _shadersWithSPSI = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) && (Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO\([^)]*\);").Success || Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_OUTPUT\( [A-Za-z]+, [A-Za-z]+ \);").Success) ).ToArray();
+            _shadersWithoutSPSI = shaders.Except(_shadersWithSPSI).ToArray();
+            _nonSPSIShaderCount = _shadersWithoutSPSI.Count();
 
 #if CVR_CCK_EXISTS
             CVRAvatar descriptor = _avatar.GetComponent<CVRAvatar>();
