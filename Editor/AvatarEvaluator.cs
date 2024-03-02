@@ -66,13 +66,24 @@ namespace Voy.AvatarHelpers {
         int _layerCount = 0;
         bool _layerCountFoldout = false;
 
+        int _materialCount = 0;
+        int _materialActiveCount = 0;
+        bool _materialCountFoldout = false;
+
         Shader[] _shadersWithGrabpass;
+        Shader[] _shadersWithoutSPSI;
+
+        int _nonSPSIShaders = 0;
 
         //write defaults
         bool _writeDefault;
         string[] _writeDefaultoutliers;
 
         string[] _emptyStates;
+
+        //mesh shenanigans
+        int gameobjectsWithMeshes = 0;
+        Renderer[] meshRenderers;
 
         private void OnEnable() {
             refreshIcon = EditorGUIUtility.IconContent("RotateTool On", "Recalculate");
@@ -137,6 +148,17 @@ namespace Voy.AvatarHelpers {
 
                 Rect r;
 
+                // Material count
+                _materialCountFoldout = DrawSection("Material Slots",
+                    _materialCount.ToString() + " (" + _materialActiveCount.ToString() + " Active in Scene)"
+                    , _materialCountFoldout);
+                if (_materialCountFoldout)
+                {
+
+                    DrawMaterialSlots();
+
+                }
+
                 //Grabpasses
                 _grabpassFoldout = DrawSection("Grabpasses", _grabpassCount.ToString(), _grabpassFoldout);
                 if(_grabpassFoldout)
@@ -166,7 +188,8 @@ namespace Voy.AvatarHelpers {
                 if(_layerCountFoldout)
                 {
                     using(new DetailsFoldout("The more layers you have the more expensive the animator is to run. " +
-                        "Animators run on the CPU, so in a CPU-limited game like VRC the smaller the layer count, the better."))
+                        "Animators run on the CPU and while lots of things are multithreaded in CVR lower-end PCs might suffer, " +
+                        "aim to keep this low."))
                         {
 
                         }
@@ -270,6 +293,53 @@ namespace Voy.AvatarHelpers {
             }
         }
 
+        void DrawMaterialSlots()
+        {
+            using (new DetailsFoldout("For each material slot you have on your Avatar your CPU needs to call on your " +
+                "GPU to draw it (draw calls). The more this needs to be done the more time it takes for your Avatar to Render. " +
+                "For this reason you should try to keep this low."))
+            {
+                EditorGUILayout.HelpBox("Material Swaps don't change the material slot count.", MessageType.Info);
+
+                if (16 < _materialCount && 32 > _materialCount)
+                {
+                    EditorGUILayout.HelpBox(" Your Material Count is Higher than 16 " +
+                        "(" + _materialCount.ToString() +
+                        "), this won't prevent you from uploading but it is getting a little high.", MessageType.Warning);
+                }
+
+                else if (_materialCount > 32)
+                {
+                    EditorGUILayout.HelpBox(" Your Material Count is Higher than 32 " +
+                        "(" + _materialCount.ToString() +
+                        "), this won't prevent you from uploading but it is very high!", MessageType.Error);
+                }
+
+                EditorGUILayout.Space();
+
+                EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.LabelField("Mesh Renderers");
+                    EditorGUILayout.LabelField("Material Slots");
+
+                EditorGUILayout.EndHorizontal();
+
+                foreach (Renderer mesh in meshRenderers)
+                {
+                    EditorGUILayout.BeginHorizontal();
+
+                        EditorGUILayout.ObjectField(mesh, typeof(Renderer), true);
+
+                        int loc_matCount = mesh.sharedMaterials.Count(); 
+                        string matOrMats = " Materials";
+                        if (loc_matCount == 1) matOrMats = " Material";
+                        EditorGUILayout.LabelField("=> " + loc_matCount.ToString() + matOrMats);
+
+                    EditorGUILayout.EndHorizontal();
+                }
+            }
+        }
+
         void DrawGrabpassFoldout()
         {
             using(new DetailsFoldout("Grabpasses are very expensive. They save your whole screen at a certain point in the rendering process to use it as a texture in the shader."))
@@ -326,13 +396,27 @@ namespace Voy.AvatarHelpers {
             EditorGUI.DrawRect(rect, new Color(0.5f, 0.5f, 0.5f, 1));
         }
 
+        Renderer[] GetRenderers(GameObject avatar)
+        {
+            Renderer[] rend = avatar.GetComponentsInChildren<Renderer>(true).Where(r => r.gameObject.GetComponentsInParent<Transform>(true).All(g => g.tag != "EditorOnly")).OrderByDescending(c => c.sharedMaterials.Count()).ToArray();
+            
+            return rend;
+        }
+
         void Evaluate()
         {
             _vramSize = TextureVRAM.QuickCalc(_avatar);
             IEnumerable<Material> materials = GetMaterials(_avatar)[1];
+            _materialCount = GetMaterials(_avatar)[2].Count();
+            _materialActiveCount = GetMaterials(_avatar)[0].Count();
+            meshRenderers = GetRenderers(_avatar);
             IEnumerable<Shader> shaders = materials.Where(m => m!= null && m.shader != null).Select(m => m.shader).Distinct();
             _shadersWithGrabpass = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) &&  Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"GrabPass\s*{\s*""(\w|_)+""\s+}").Success ).ToArray();
             _grabpassCount = _shadersWithGrabpass.Count();
+
+            _shadersWithoutSPSI = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) && Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO\([^)]*\);").Success).ToArray();
+            _nonSPSIShaders = _shadersWithoutSPSI.Count();
+
 #if CVR_CCK_EXISTS
             CVRAvatar descriptor = _avatar.GetComponent<CVRAvatar>();
 
@@ -364,6 +448,10 @@ namespace Voy.AvatarHelpers {
 
             List<Material> materialsActive = allBuiltRenderers.Where(r => r.gameObject.activeInHierarchy).SelectMany(r => r.sharedMaterials).ToList();
             List<Material> materialsAll = allBuiltRenderers.SelectMany(r => r.sharedMaterials).ToList();
+            //Doing this just cause I need the true number of materials in the scene without the clip count.
+            //It'd probably be better to do this not in here... too bad.
+            List<Material> materialsTotal = allBuiltRenderers.SelectMany(r => r.sharedMaterials).ToList();
+
 #if CVR_CCK_EXISTS
             //animation materials
             CVRAvatar descriptor = avatar.GetComponent<CVRAvatar>();
@@ -382,7 +470,7 @@ namespace Voy.AvatarHelpers {
             }
 
 #endif
-            return new IEnumerable<Material>[] { materialsActive.Distinct(), materialsAll.Distinct() };
+            return new IEnumerable<Material>[] { materialsActive.Distinct(), materialsAll.Distinct(), materialsTotal.Distinct() };
         }
 
         public static string ToByteString(long l)
