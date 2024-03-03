@@ -22,6 +22,119 @@ namespace Voy.AvatarHelpers {
         public const string VERSION = "1.0.0";
         public const string VERSIONBASED = "By VoyVivika Based on Thry's Avatar Evaluator v1.3.6";
 
+        public static readonly string[] BUILTINSHADERS = {
+            "Mobile/Particles/Additive",
+            "Mobile/Particles/Alpha Blended",
+            "Mobile/Particles/Multiply",
+            "Mobile/Particles/VertexLit Blended",
+            "Mobile/Bumped Diffuse",
+            "Mobile/Bumped Specular",
+            "Mobile/Bumped Specular (1 Directional Realtime Light)",
+            "Mobile/Diffuse",
+            "Mobile/Skybox",
+            "Mobile/Unlit (Supports Lightmap)",
+            "Mobile/VertexLit",
+            "Mobile/VertexLit (Only Directional Lights)",
+            "Nature/Terrain/Diffuse",
+            "Nature/Terrain/Specular",
+            "Nature/Terrain/Standard",
+            "Nature/SpeedTree",
+            "Nature/SpeedTree Billboard",
+            "Nature/SpeedTree8",
+            "Nature/Tree Creator Bark",
+            "Nature/Tree Creator Leaves",
+            "Nature/Tree Creator Leaves Fast",
+            "Nature/Tree Soft Occlusion Bark",
+            "Nature/Tree Soft Occlusion Leaves",
+            "UI/Lit/Bumped",
+            "UI/Lit/Detail",
+            "UI/Lit/Refration",
+            "UI/Lit/Refration Detail",
+            "UI/Lit/Transparent",
+            "UI/Unlit/Detail",
+            "UI/Unlit/Text",
+            "UI/Unlit/Text Detail",
+            "UI/Unlit/Transparent",
+            "UI/Default",
+            "UI/Default Font",
+            "UI/DefaultETC1",
+            "VR/SpatialMapping/Occlusion",
+            "VR/SpatialMapping/Wireframe",
+            "FX/Flare",
+            "GUI/Text Shader",
+            "Particles/Standard Surface",
+            "Particles/Standard Unlit",
+            "Skybox/6 Sided",
+            "Skybox/Cubemap",
+            "Skybox/Panoramic",
+            "Skybox/Procedural",
+            "Sprites/Default",
+            "Sprites/Diffuse",
+            "Sprites/Mask",
+            "Unlit/Color",
+            "Unlit/ProfileAnalyzerShader",
+            "Unlit/Texture",
+            "Unlit/Transparent",
+            "Unlit/Transparent Cutout",
+            "Autodesk Interactive",
+            "Standard",
+            "Standard (Specular setup)",
+            "Legacy Shaders/Bumped Diffuse",
+            "Legacy Shaders/Bumped Specular",
+            "Legacy Shaders/Decal",
+            "Legacy Shaders/Diffuse",
+            "Legacy Shaders/Diffuse Detail",
+            "Legacy Shaders/Diffuse Fast",
+            "Legacy Shaders/Lightmapped/Bumped Diffuse",
+            "Legacy Shaders/Lightmapped/Bumped Specular",
+            "Legacy Shaders/Lightmapped/Diffuse",
+            "Legacy Shaders/Lightmapped/Specular",
+            "Legacy Shaders/Lightmapped/VertexLit",
+            "Legacy Shaders/Parallax Diffuse",
+            "Legacy Shaders/Parallax Specular",
+            "Legacy Shaders/Particles/~Additive-Multiply",
+            "Legacy Shaders/Particles/Additive",
+            "Legacy Shaders/Particles/Additive (Soft)",
+            "Legacy Shaders/Particles/Alpha Blended",
+            "Legacy Shaders/Particles/Alpha Blended Premultiply",
+            "Legacy Shaders/Particles/Anim Alpha Blended",
+            "Legacy Shaders/Particles/Multiply",
+            "Legacy Shaders/Particles/Multiply (Double)",
+            "Legacy Shaders/Particles/VertexLit Blended",
+            "Legacy Shaders/Reflective/Bumped Diffuse",
+            "Legacy Shaders/Reflective/Bumped Specular",
+            "Legacy Shaders/Reflective/Bumped Unlit",
+            "Legacy Shaders/Reflective/Bumped VertexLit",
+            "Legacy Shaders/Reflective/Diffuse",
+            "Legacy Shaders/Reflective/Parallax Diffuse",
+            "Legacy Shaders/Reflective/Parallax Specular",
+            "Legacy Shaders/Reflective/Specular",
+            "Legacy Shaders/Reflective/VertexLit",
+            "Legacy Shaders/Self-Illumin/Bumped Diffuse",
+            "Legacy Shaders/Self-Illumin/Bumped Specular",
+            "Legacy Shaders/Self-Illumin/Diffuse",
+            "Legacy Shaders/Self-Illumin/Parallax Diffuse",
+            "Legacy Shaders/Self-Illumin/Parallax Specular",
+            "Legacy Shaders/Self-Illumin/Specular",
+            "Legacy Shaders/Self-Illumin/VertexLit",
+            "Legacy Shaders/Specular",
+            "Legacy Shaders/Transparent/Bumped Diffuse",
+            "Legacy Shaders/Transparent/Bumped Specular",
+            "Legacy Shaders/Transparent/Cutout/Bumped Diffuse",
+            "Legacy Shaders/Transparent/Cutout/Bumped Specular",
+            "Legacy Shaders/Transparent/Cutout/Diffuse",
+            "Legacy Shaders/Transparent/Cutout/Soft Edge Unlit",
+            "Legacy Shaders/Transparent/Cutout/Specular",
+            "Legacy Shaders/Transparent/Cutout/VertexLit",
+            "Legacy Shaders/Transparent/Diffuse",
+            "Legacy Shaders/Transparent/Parallax Diffuse",
+            "Legacy Shaders/Transparent/Parallax Specular",
+            "Legacy Shaders/Transparent/Specular",
+            "Legacy Shaders/Transparent/VertexLit",
+            "VertexLit"
+
+        };
+
         [MenuItem("Voy/Avatar/Avatar Evaluator")]
         static void Init()
         {
@@ -66,8 +179,8 @@ namespace Voy.AvatarHelpers {
         int _layerCount = 0;
         bool _layerCountFoldout = false;
 
-        int _materialCount = 0;
-        int _materialActiveCount = 0;
+        int _materialSlotCount = 0;
+        int _materialSlotActiveCount = 0;
         bool _materialCountFoldout = false;
 
         Shader[] _shadersWithGrabpass;
@@ -75,7 +188,9 @@ namespace Voy.AvatarHelpers {
         bool _shaderSPSIFoldout = false;
         Shader[] _shadersWithSPSI;
         Shader[] _shadersWithoutSPSI;
+        Material[] _materialsWithoutSPSI;
         int _nonSPSIShaderCount = 0;
+        int _nonSPSIMaterialCount = 0;
 
         //write defaults
         bool _writeDefault;
@@ -152,7 +267,7 @@ namespace Voy.AvatarHelpers {
 
                 // Material count
                 _materialCountFoldout = DrawSection("Material Slots",
-                    _materialCount.ToString() + " (" + _materialActiveCount.ToString() + " Active in Scene)"
+                    _materialSlotCount.ToString() + " (" + _materialSlotActiveCount.ToString() + " Active in Scene)"
                     , _materialCountFoldout);
                 if (_materialCountFoldout)
                 {
@@ -305,34 +420,65 @@ namespace Voy.AvatarHelpers {
 
         void DrawSPSIFoldout()
         {
-            using (new DetailsFoldout("ChilloutVR uses Single-Pass Stereo Instanced Rendering in VR Mode. The Shaders you" +
-                " use on your Avatar should support this, if not the Avatar will not Appear in the Right Eye (except in Mirrors). " +
+            using (new DetailsFoldout("ChilloutVR uses Single-Pass Stereo Instanced Rendering (SPSI or SPS-I) in VR Mode. The Shaders you" +
+                " use on your Avatar need to support this, if not the Avatar will not Appear in the Right Eye (except in Mirrors). " +
                 "it is Highly Advised you either Fix This or Choose a Different Shader."))
             {
 
-                EditorGUILayout.HelpBox("Please Ignore Built-In Unity Shaders like Standard. That is a bug that I am looking into fixing.", MessageType.Info);
+                EditorGUILayout.HelpBox("This list may not be Entirely Accurate. Please be mindful of that.", MessageType.Info);
 
                 IEnumerable<Material> materials = GetMaterials(_avatar)[1];
+
+                switch (_nonSPSIShaderCount) 
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        EditorGUILayout.HelpBox("One Material may not be SPS-I Compatible. It may not Look Right in VR! Please use a different Shader for that Material!", MessageType.Warning);
+                        break;
+                    case > 1:
+                        EditorGUILayout.HelpBox("More than One Material may not be SPS-I Compatible. They may not Look Right in VR! Please use a different Shader for those Materials!", MessageType.Warning);
+                        break;
+                }
 
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();
 
-                    EditorGUILayout.LabelField("Shaders");
+                    EditorGUILayout.LabelField("Material");
+                    EditorGUILayout.LabelField("Shader");
 
                 EditorGUILayout.EndHorizontal();
 
-                foreach (Shader shader in _shadersWithoutSPSI)
+                foreach (Material material in materials)
                 {
+                    Shader shader = material.shader;
 
+                    if (_shadersWithoutSPSI.Contains(shader))
+                    { 
                         EditorGUILayout.BeginHorizontal();
+
+                        EditorGUILayout.ObjectField(material, typeof(Material), true);
 
                         EditorGUILayout.ObjectField(shader, typeof(Shader), true);
 
                         EditorGUILayout.EndHorizontal();
+                    }
 
-                    
                 }
 
+                /*
+                foreach (Shader shader in _shadersWithoutSPSI)
+                {
+                    
+                    EditorGUILayout.BeginHorizontal();
+
+                    EditorGUILayout.ObjectField(shader, typeof(Shader), true);
+
+                    EditorGUILayout.EndHorizontal();
+                    
+
+                }
+                */
             }
 
 
@@ -347,17 +493,29 @@ namespace Voy.AvatarHelpers {
             {
                 EditorGUILayout.HelpBox("Material Swaps don't change the material slot count.", MessageType.Info);
 
-                if (16 < _materialCount && 32 > _materialCount)
+                switch (_nonSPSIShaderCount) 
+                {
+                    case 0:
+                        break;
+                    case 1:
+                        EditorGUILayout.HelpBox("One Material may not be SPSI Compatible. It may not Look Right in VR! Please use a different Shader for that Material!", MessageType.Warning);
+                        break;
+                    case > 1:
+                        EditorGUILayout.HelpBox("More than One Material may not be SPSI Compatible. They may not Look Right in VR! Please use a different Shader for those Materials!", MessageType.Warning);
+                        break;
+                }
+
+                if (16 < _materialSlotCount && 32 > _materialSlotCount)
                 {
                     EditorGUILayout.HelpBox(" Your Material Count is Higher than 16 " +
-                        "(" + _materialCount.ToString() +
+                        "(" + _materialSlotCount.ToString() +
                         "), this won't prevent you from uploading but it is getting a little high.", MessageType.Warning);
                 }
 
-                else if (_materialCount > 32)
+                else if (_materialSlotCount > 32)
                 {
                     EditorGUILayout.HelpBox(" Your Material Count is Higher than 32 " +
-                        "(" + _materialCount.ToString() +
+                        "(" + _materialSlotCount.ToString() +
                         "), this won't prevent you from uploading but it is very high!", MessageType.Error);
                 }
 
@@ -367,19 +525,43 @@ namespace Voy.AvatarHelpers {
 
                     EditorGUILayout.LabelField("Mesh Renderers");
                     EditorGUILayout.LabelField("Material Slots");
+                    EditorGUILayout.LabelField("Non-SPSI Materials");
 
                 EditorGUILayout.EndHorizontal();
 
-                foreach (Renderer mesh in meshRenderers)
+                foreach (Renderer renderer in meshRenderers)
                 {
+                    if (renderer == null)
+                    {
+                        EditorGUILayout.LabelField("Missing or Deleted. Please Refresh.");
+                        continue;
+                    }
+
                     EditorGUILayout.BeginHorizontal();
 
-                        EditorGUILayout.ObjectField(mesh, typeof(Renderer), true);
+                    
+                    EditorGUILayout.ObjectField(renderer, typeof(Renderer), true);
 
-                        int loc_matCount = mesh.sharedMaterials.Count(); 
-                        string matOrMats = " Materials";
-                        if (loc_matCount == 1) matOrMats = " Material";
-                        EditorGUILayout.LabelField("=> " + loc_matCount.ToString() + matOrMats);
+                    int loc_matCount = renderer.sharedMaterials.Count(); 
+                    string matOrMats = " Materials";
+                    if (loc_matCount == 1) matOrMats = " Material";
+                    EditorGUILayout.LabelField("=> " + loc_matCount.ToString() + matOrMats);
+
+                    int nonSPSIcount = 0;
+
+                    foreach (Material mat in renderer.sharedMaterials)
+                    {
+
+                        if (_shadersWithoutSPSI.Contains(mat.shader))
+                        {
+
+                            nonSPSIcount += 1;
+
+                        }
+
+                    }
+
+                    EditorGUILayout.LabelField(nonSPSIcount.ToString());
 
                     EditorGUILayout.EndHorizontal();
                 }
@@ -453,16 +635,29 @@ namespace Voy.AvatarHelpers {
         {
             _vramSize = TextureVRAM.QuickCalc(_avatar);
             IEnumerable<Material> materials = GetMaterials(_avatar)[1];
-            _materialCount = GetMaterials(_avatar)[2].Count();
-            _materialActiveCount = GetMaterials(_avatar)[0].Count();
+            _materialSlotCount = GetMaterialSlotCount(_avatar)[0]; //GetMaterials(_avatar)[2].Count();
+            _materialSlotActiveCount = GetMaterialSlotCount(_avatar)[1]; //GetMaterials(_avatar)[0].Count();
             meshRenderers = GetRenderers(_avatar);
             IEnumerable<Shader> shaders = materials.Where(m => m!= null && m.shader != null).Select(m => m.shader).Distinct();
             _shadersWithGrabpass = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) &&  Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"GrabPass\s*{\s*""(\w|_)+""\s+}").Success ).ToArray();
             _grabpassCount = _shadersWithGrabpass.Count();
+            IEnumerable<Shader> nonBuiltinShaders = shaders.Where(s => !BUILTINSHADERS.Contains(s.name)).Distinct();
 
-            _shadersWithSPSI = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) && (Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO\([^)]*\);").Success || Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_OUTPUT\( [A-Za-z]+, [A-Za-z]+ \);").Success) ).ToArray();
-            _shadersWithoutSPSI = shaders.Except(_shadersWithSPSI).ToArray();
+            /*Shader[] nonBuiltinShaders = { };
+
+            foreach (Shader shader in shaders)
+            {
+                if (!BUILTINSHADERS.Contains(shader.name))
+                {
+                    nonBuiltinShaders.Append(shader);
+                }
+            }*/
+
+            _shadersWithSPSI = nonBuiltinShaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) && (Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO\([^)]*\)").Success || Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_OUTPUT\( [A-Za-z]+, [A-Za-z]+ \)").Success) || Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INSTANCING_BUFFER_START\([^)]*\)").Success ).ToArray();
+            _shadersWithoutSPSI = nonBuiltinShaders.Except(_shadersWithSPSI).ToArray();
             _nonSPSIShaderCount = _shadersWithoutSPSI.Count();
+            _materialsWithoutSPSI = materials.Where(m => !_shadersWithoutSPSI.Contains(m.shader)).ToArray();
+            _nonSPSIMaterialCount = _materialsWithoutSPSI.Count();
 
 #if CVR_CCK_EXISTS
             CVRAvatar descriptor = _avatar.GetComponent<CVRAvatar>();
@@ -487,6 +682,26 @@ namespace Voy.AvatarHelpers {
 
             _skinendMeshesWithBlendshapes =  _avatar.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(r => r.sharedMesh != null && r.sharedMesh.blendShapeCount > 0).Select(r => (r, r.sharedMesh.triangles.Length / 3, r.sharedMesh.blendShapeCount)).OrderByDescending(i => i.Item2).ToArray();
             _totalBlendshapeVerticies = _skinendMeshesWithBlendshapes.Sum(i => i.verticies);
+        }
+
+        public int[] GetMaterialSlotCount(GameObject avatar)
+        {
+
+            Renderer[] allBuiltRenderers = avatar.GetComponentsInChildren<Renderer>(true).Where(r => r.gameObject.GetComponentsInParent<Transform>(true).All(g => g.tag != "EditorOnly")).ToArray();
+            int[] materialSlots = {0, 0};
+            foreach (Renderer renderer in allBuiltRenderers)
+            {
+                foreach (Material material in renderer.sharedMaterials)
+                {
+
+                    materialSlots[0] += 1;
+                    if (renderer.enabled && renderer.gameObject.activeInHierarchy) materialSlots[1] += 1;
+
+                }
+            }
+
+            return materialSlots;
+
         }
 
         public static IEnumerable<Material>[] GetMaterials(GameObject avatar)
