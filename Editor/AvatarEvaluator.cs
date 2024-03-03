@@ -19,7 +19,7 @@ using ABI.CCK.Components;
 namespace Voy.AvatarHelpers {
     public class AvatarEvaluator : EditorWindow
     {
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.1.0";
         public const string VERSIONBASED = "By VoyVivika Based on Thry's Avatar Evaluator v1.3.6";
 
         public static readonly string[] BUILTINSHADERS = {
