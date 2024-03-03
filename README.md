@@ -8,13 +8,15 @@ This Project builds off of [Thryrallo's VRC Avatar Performance Tools v1.3.6](htt
 Use Thryrallo's Utility if you are Creating an Avatar for VRChat and not ChilloutVR.
 
 ## Avatar Evaluator
-Calculates and evaluates Avatar Metrics that can be useful for Optimization.
+Calculates and evaluates Avatar Stats and Metrics that can be useful for Making sure your Avatar works and is Optimized in ChilloutVR.
 1. VRAM Size
-2. Grabpasses
-3. Blendshapes
-4. "Any State" transition count
-5. Write defaults check
-6. Empty animator state check
+2. Material Slot Amount
+3. If Shaders Support Single-Pass Instancing (WIP)
+4. Grabpasses
+5. Blendshapes
+6. "Any State" transition count
+7. Write defaults check
+8. Empty animator state check
  
 ## VRAM Checker
 Calculates the VRAM usage of the textures on your avatar.  
