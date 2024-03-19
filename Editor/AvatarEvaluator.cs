@@ -19,7 +19,7 @@ using ABI.CCK.Components;
 namespace Voy.AvatarHelpers {
     public class AvatarEvaluator : EditorWindow
     {
-        public const string VERSION = "1.1.0";
+        public const string VERSION = "1.1.1";
         public const string VERSIONBASED = "By VoyVivika Based on Thry's Avatar Evaluator v1.3.6";
 
         public static readonly string[] BUILTINSHADERS = {
@@ -332,6 +332,7 @@ namespace Voy.AvatarHelpers {
                     "If a state is marked with write defaults it means that the values animated by this state will be set to their default values when not in this state. " +
                     "This can be useful to make compact toggles, but is very prohibiting when making more complex systems." +
                     "Click here for more information on animator states.", MessageType.None);
+                EditorGUILayout.HelpBox("Note: It is possible this quirk has been tweaked in ChilloutVR r174.", MessageType.Info);
                 if (Event.current.type == EventType.MouseDown && GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
                     Application.OpenURL("https://docs.unity3d.com/Manual/class-State.html");
                 if (_writeDefaultoutliers.Length > 0)
