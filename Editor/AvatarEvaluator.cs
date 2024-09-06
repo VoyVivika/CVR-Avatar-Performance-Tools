@@ -19,7 +19,7 @@ using ABI.CCK.Components;
 namespace Voy.AvatarHelpers {
     public class AvatarEvaluator : EditorWindow
     {
-        public const string VERSION = "1.1.1";
+        public const string VERSION = "1.1.2";
         public const string VERSIONBASED = "By VoyVivika Based on Thry's Avatar Evaluator v1.3.6";
 
         public static readonly string[] BUILTINSHADERS = {
@@ -46,6 +46,10 @@ namespace Voy.AvatarHelpers {
             "Nature/Tree Creator Leaves Fast",
             "Nature/Tree Soft Occlusion Bark",
             "Nature/Tree Soft Occlusion Leaves",
+
+            // Why would you need UI on an avatar?
+
+            /*
             "UI/Lit/Bumped",
             "UI/Lit/Detail",
             "UI/Lit/Refration",
@@ -58,16 +62,24 @@ namespace Voy.AvatarHelpers {
             "UI/Default",
             "UI/Default Font",
             "UI/DefaultETC1",
+            "GUI/Text Shader",
+            */
+
             "VR/SpatialMapping/Occlusion",
             "VR/SpatialMapping/Wireframe",
             "FX/Flare",
-            "GUI/Text Shader",
             "Particles/Standard Surface",
             "Particles/Standard Unlit",
+            
+            // Why would you need skybox shaders on an avatar?
+
+            /*
             "Skybox/6 Sided",
             "Skybox/Cubemap",
             "Skybox/Panoramic",
             "Skybox/Procedural",
+            */
+
             "Sprites/Default",
             "Sprites/Diffuse",
             "Sprites/Mask",
@@ -79,7 +91,11 @@ namespace Voy.AvatarHelpers {
             "Autodesk Interactive",
             "Standard",
             "Standard (Specular setup)",
-            "Legacy Shaders/Bumped Diffuse",
+
+            // Legacy Shaders likely don't do Single-Pass Instancing, so these are being commentted out to properly inform the user that these shaders will not work.
+            // If any of the shaders listed do not render in Both Eyes, please let me know and they will be commentted out.
+
+            /*"Legacy Shaders/Bumped Diffuse",
             "Legacy Shaders/Bumped Specular",
             "Legacy Shaders/Decal",
             "Legacy Shaders/Diffuse",
@@ -130,7 +146,7 @@ namespace Voy.AvatarHelpers {
             "Legacy Shaders/Transparent/Parallax Diffuse",
             "Legacy Shaders/Transparent/Parallax Specular",
             "Legacy Shaders/Transparent/Specular",
-            "Legacy Shaders/Transparent/VertexLit",
+            "Legacy Shaders/Transparent/VertexLit",*/
             "VertexLit"
 
         };
@@ -190,7 +206,7 @@ namespace Voy.AvatarHelpers {
         Shader[] _shadersWithoutSPSI;
         Material[] _materialsWithoutSPSI;
         int _nonSPSIShaderCount = 0;
-        int _nonSPSIMaterialCount = 0;
+        int _nonSPSIMaterialCount = 0; // this isn't used but it is set, and it is left here incase it may be needed.
 
         //write defaults
         bool _writeDefault;
@@ -214,7 +230,6 @@ namespace Voy.AvatarHelpers {
             EditorGUILayout.LabelField(VERSIONBASED, EditorStyles.centeredGreyMiniLabel);
             if (GUILayout.Button("Based on work by Thryrallo, Click here to follow them on twitter", EditorStyles.centeredGreyMiniLabel))
                 Application.OpenURL("https://twitter.com/thryrallo");
-            EditorGUILayout.Space();
             if (GUILayout.Button("Edited by VoyVivika for CVR CCK Compatibility, Click here to visit my Linktree!", EditorStyles.centeredGreyMiniLabel))
                 Application.OpenURL("https://linktr.ee/voyvivika");
 
@@ -327,14 +342,21 @@ namespace Voy.AvatarHelpers {
                 r = GUILayoutUtility.GetRect(new GUIContent(), EditorStyles.boldLabel);
                 GUI.Label(r, "Write Defaults: ", EditorStyles.boldLabel);
                 r.x += 140;
-                GUI.Label(r, "" + _writeDefault);
+                string writeDefaultState = "" + _writeDefault;
+
+                if (_writeDefaultoutliers.Length > 0)
+                    writeDefaultState = "Mixed (Mostly " + _writeDefault + ")"  ;
+
+                GUI.Label(r, writeDefaultState);
                 EditorGUILayout.HelpBox("Unity needs all the states in your animator to have the same write default value: Either all off or all on. "+
                     "If a state is marked with write defaults it means that the values animated by this state will be set to their default values when not in this state. " +
                     "This can be useful to make compact toggles, but is very prohibiting when making more complex systems." +
                     "Click here for more information on animator states.", MessageType.None);
-                EditorGUILayout.HelpBox("Note: It is possible this quirk has been tweaked in ChilloutVR r174.", MessageType.Info);
                 if (Event.current.type == EventType.MouseDown && GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
                     Application.OpenURL("https://docs.unity3d.com/Manual/class-State.html");
+                EditorGUILayout.HelpBox("Note: This quirk has been tweaked (if not fixed) in recent versions of ChilloutVR. " +
+                    "If you're attempting to port an Avatar from VRChat or any other platform that may inherit this quirk you may want " +
+                    "to ensure that the Write Defaults option on the Animation States in your Animator are all True or all False.", MessageType.Info);
                 if (_writeDefaultoutliers.Length > 0)
                 {
                     EditorGUILayout.HelpBox("Not all of your states have the same write default value.", MessageType.Warning);
@@ -425,7 +447,8 @@ namespace Voy.AvatarHelpers {
                 " use on your Avatar need to support this, if not the Avatar will not Appear in the Right Eye (except in Mirrors). " +
                 "it is Highly Advised you either Fix This or Choose a Different Shader."))
             {
-
+                if (_nonSPSIShaderCount > 0)
+                {
                 EditorGUILayout.HelpBox("This list may not be Entirely Accurate. Please be mindful of that.", MessageType.Info);
 
                 IEnumerable<Material> materials = GetMaterials(_avatar)[1];
@@ -442,29 +465,30 @@ namespace Voy.AvatarHelpers {
                         break;
                 }
 
-                EditorGUILayout.Space();
-                EditorGUILayout.BeginHorizontal();
+                    EditorGUILayout.Space();
+                    EditorGUILayout.BeginHorizontal();
 
                     EditorGUILayout.LabelField("Material");
                     EditorGUILayout.LabelField("Shader");
 
-                EditorGUILayout.EndHorizontal();
+                    EditorGUILayout.EndHorizontal();
 
-                foreach (Material material in materials)
-                {
-                    Shader shader = material.shader;
+                    foreach (Material material in materials)
+                    {
+                        Shader shader = material.shader;
 
-                    if (_shadersWithoutSPSI.Contains(shader))
-                    { 
-                        EditorGUILayout.BeginHorizontal();
+                        if (_shadersWithoutSPSI.Contains(shader))
+                        {
+                            EditorGUILayout.BeginHorizontal();
 
-                        EditorGUILayout.ObjectField(material, typeof(Material), true);
+                            EditorGUILayout.ObjectField(material, typeof(Material), true);
 
-                        EditorGUILayout.ObjectField(shader, typeof(Shader), true);
+                            EditorGUILayout.ObjectField(shader, typeof(Shader), true);
 
-                        EditorGUILayout.EndHorizontal();
+                            EditorGUILayout.EndHorizontal();
+                        }
+
                     }
-
                 }
 
                 /*
