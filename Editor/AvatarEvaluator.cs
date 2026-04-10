@@ -19,138 +19,9 @@ using ABI.CCK.Components;
 namespace Voy.AvatarHelpers {
     public class AvatarEvaluator : EditorWindow
     {
-        public const string VERSION = "1.1.1";
+        public const string VERSION = "1.1.2";
         public const string VERSIONBASED = "By VoyVivika Based on Thry's Avatar Evaluator v1.3.6";
-
-        public static readonly string[] BUILTINSHADERS = {
-            "Mobile/Particles/Additive",
-            "Mobile/Particles/Alpha Blended",
-            "Mobile/Particles/Multiply",
-            "Mobile/Particles/VertexLit Blended",
-            "Mobile/Bumped Diffuse",
-            "Mobile/Bumped Specular",
-            "Mobile/Bumped Specular (1 Directional Realtime Light)",
-            "Mobile/Diffuse",
-            "Mobile/Skybox",
-            "Mobile/Unlit (Supports Lightmap)",
-            "Mobile/VertexLit",
-            "Mobile/VertexLit (Only Directional Lights)",
-            "Nature/Terrain/Diffuse",
-            "Nature/Terrain/Specular",
-            "Nature/Terrain/Standard",
-            "Nature/SpeedTree",
-            "Nature/SpeedTree Billboard",
-            "Nature/SpeedTree8",
-            "Nature/Tree Creator Bark",
-            "Nature/Tree Creator Leaves",
-            "Nature/Tree Creator Leaves Fast",
-            "Nature/Tree Soft Occlusion Bark",
-            "Nature/Tree Soft Occlusion Leaves",
-
-            // Why would you need UI on an avatar?
-
-            /*
-            "UI/Lit/Bumped",
-            "UI/Lit/Detail",
-            "UI/Lit/Refration",
-            "UI/Lit/Refration Detail",
-            "UI/Lit/Transparent",
-            "UI/Unlit/Detail",
-            "UI/Unlit/Text",
-            "UI/Unlit/Text Detail",
-            "UI/Unlit/Transparent",
-            "UI/Default",
-            "UI/Default Font",
-            "UI/DefaultETC1",
-            "GUI/Text Shader",
-            */
-
-            "VR/SpatialMapping/Occlusion",
-            "VR/SpatialMapping/Wireframe",
-            "FX/Flare",
-            "Particles/Standard Surface",
-            "Particles/Standard Unlit",
-            
-            // Why would you need skybox shaders on an avatar?
-
-            /*
-            "Skybox/6 Sided",
-            "Skybox/Cubemap",
-            "Skybox/Panoramic",
-            "Skybox/Procedural",
-            */
-
-            "Sprites/Default",
-            "Sprites/Diffuse",
-            "Sprites/Mask",
-            "Unlit/Color",
-            "Unlit/ProfileAnalyzerShader",
-            "Unlit/Texture",
-            "Unlit/Transparent",
-            "Unlit/Transparent Cutout",
-            "Autodesk Interactive",
-            "Standard",
-            "Standard (Specular setup)",
-
-            // Legacy Shaders likely don't do Single-Pass Instancing, so these are being commentted out to properly inform the user that these shaders will not work.
-            // If any of the shaders listed do not render in Both Eyes, please let me know and they will be commentted out.
-
-            /*"Legacy Shaders/Bumped Diffuse",
-            "Legacy Shaders/Bumped Specular",
-            "Legacy Shaders/Decal",
-            "Legacy Shaders/Diffuse",
-            "Legacy Shaders/Diffuse Detail",
-            "Legacy Shaders/Diffuse Fast",
-            "Legacy Shaders/Lightmapped/Bumped Diffuse",
-            "Legacy Shaders/Lightmapped/Bumped Specular",
-            "Legacy Shaders/Lightmapped/Diffuse",
-            "Legacy Shaders/Lightmapped/Specular",
-            "Legacy Shaders/Lightmapped/VertexLit",
-            "Legacy Shaders/Parallax Diffuse",
-            "Legacy Shaders/Parallax Specular",
-            "Legacy Shaders/Particles/~Additive-Multiply",
-            "Legacy Shaders/Particles/Additive",
-            "Legacy Shaders/Particles/Additive (Soft)",
-            "Legacy Shaders/Particles/Alpha Blended",
-            "Legacy Shaders/Particles/Alpha Blended Premultiply",
-            "Legacy Shaders/Particles/Anim Alpha Blended",
-            "Legacy Shaders/Particles/Multiply",
-            "Legacy Shaders/Particles/Multiply (Double)",
-            "Legacy Shaders/Particles/VertexLit Blended",
-            "Legacy Shaders/Reflective/Bumped Diffuse",
-            "Legacy Shaders/Reflective/Bumped Specular",
-            "Legacy Shaders/Reflective/Bumped Unlit",
-            "Legacy Shaders/Reflective/Bumped VertexLit",
-            "Legacy Shaders/Reflective/Diffuse",
-            "Legacy Shaders/Reflective/Parallax Diffuse",
-            "Legacy Shaders/Reflective/Parallax Specular",
-            "Legacy Shaders/Reflective/Specular",
-            "Legacy Shaders/Reflective/VertexLit",
-            "Legacy Shaders/Self-Illumin/Bumped Diffuse",
-            "Legacy Shaders/Self-Illumin/Bumped Specular",
-            "Legacy Shaders/Self-Illumin/Diffuse",
-            "Legacy Shaders/Self-Illumin/Parallax Diffuse",
-            "Legacy Shaders/Self-Illumin/Parallax Specular",
-            "Legacy Shaders/Self-Illumin/Specular",
-            "Legacy Shaders/Self-Illumin/VertexLit",
-            "Legacy Shaders/Specular",
-            "Legacy Shaders/Transparent/Bumped Diffuse",
-            "Legacy Shaders/Transparent/Bumped Specular",
-            "Legacy Shaders/Transparent/Cutout/Bumped Diffuse",
-            "Legacy Shaders/Transparent/Cutout/Bumped Specular",
-            "Legacy Shaders/Transparent/Cutout/Diffuse",
-            "Legacy Shaders/Transparent/Cutout/Soft Edge Unlit",
-            "Legacy Shaders/Transparent/Cutout/Specular",
-            "Legacy Shaders/Transparent/Cutout/VertexLit",
-            "Legacy Shaders/Transparent/Diffuse",
-            "Legacy Shaders/Transparent/Parallax Diffuse",
-            "Legacy Shaders/Transparent/Parallax Specular",
-            "Legacy Shaders/Transparent/Specular",
-            "Legacy Shaders/Transparent/VertexLit",*/
-            "VertexLit"
-
-        };
-
+        
         [MenuItem("Voy/Avatar/Avatar Evaluator")]
         static void Init()
         {
@@ -184,6 +55,7 @@ namespace Voy.AvatarHelpers {
 
         int _grabpassCount = 0;
         bool _grabpassFoldout = false;
+        private bool _hasController = true;
 
         (SkinnedMeshRenderer renderer, int verticies, int blendshapeCount)[] _skinendMeshesWithBlendshapes;
         long _totalBlendshapeVerticies = 0;
@@ -210,9 +82,9 @@ namespace Voy.AvatarHelpers {
 
         //write defaults
         bool _writeDefault;
-        string[] _writeDefaultoutliers;
+        string[] _writeDefaultoutliers = new string[0];
 
-        string[] _emptyStates;
+        string[] _emptyStates = new string[0];
 
         //mesh shenanigans
         int gameobjectsWithMeshes = 0;
@@ -269,6 +141,16 @@ namespace Voy.AvatarHelpers {
 
             if (_avatar != null)
             {
+#if CVR_CCK_EXISTS
+                // Display Missing Animator Warning
+                {
+                    if (!_hasController)
+                    {
+                        EditorGUILayout.HelpBox("Your CVR Avatar is missing an Override Controller in the Avatar Customization Section. Your Avatar will not Animate if this is missing. (Desktop & Half-Body Animations will be missing if this is not fixed.) Once fixed make sure to hit the Refresh Button above.", MessageType.Warning);
+                    }
+                }
+#endif
+
                 if (_shadersWithGrabpass == null) Evaluate();
                 if (_skinendMeshesWithBlendshapes == null) Evaluate();
                 EditorGUILayout.Space();
@@ -363,6 +245,7 @@ namespace Voy.AvatarHelpers {
                     _writeDefaultsFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(_writeDefaultsFoldout, "Outliers", EditorStyles.foldout);
                     if (_writeDefaultsFoldout)
                     {
+                        if (_writeDefaultoutliers.Length > 0)
                         foreach (string s in _writeDefaultoutliers)
                             EditorGUILayout.LabelField(s);
                     }
@@ -666,8 +549,11 @@ namespace Voy.AvatarHelpers {
             IEnumerable<Shader> shaders = materials.Where(m => m!= null && m.shader != null).Select(m => m.shader).Distinct();
             _shadersWithGrabpass = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) &&  Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"GrabPass\s*{\s*""(\w|_)+""\s+}").Success ).ToArray();
             _grabpassCount = _shadersWithGrabpass.Count();
-            IEnumerable<Shader> nonBuiltinShaders = shaders.Where(s => !BUILTINSHADERS.Contains(s.name)).Distinct();
-
+            //Debug.Log(AssetDatabase.GetAssetPath((shaders.First())));
+            IEnumerable<Shader> nonBuiltinShaders = shaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) && ((AssetDatabase.GetAssetPath(s).StartsWith("Assets/")) || !(AssetDatabase.GetAssetPath(s).StartsWith("Packages/")))).Distinct();
+            
+            
+            
             /*Shader[] nonBuiltinShaders = { };
 
             foreach (Shader shader in shaders)
@@ -677,7 +563,9 @@ namespace Voy.AvatarHelpers {
                     nonBuiltinShaders.Append(shader);
                 }
             }*/
-
+            
+            //Debug.Log(AssetDatabase.GetAssetPath(nonBuiltinShaders.First()));
+            
             _shadersWithSPSI = nonBuiltinShaders.Where(s => File.Exists(AssetDatabase.GetAssetPath(s)) && (Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO\([^)]*\)").Success || Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INITIALIZE_OUTPUT\( [A-Za-z]+, [A-Za-z]+ \)").Success) || Regex.Match(File.ReadAllText(AssetDatabase.GetAssetPath(s)), @"UNITY_INSTANCING_BUFFER_START\([^)]*\)").Success ).ToArray();
             _shadersWithoutSPSI = nonBuiltinShaders.Except(_shadersWithSPSI).ToArray();
             _nonSPSIShaderCount = _shadersWithoutSPSI.Count();
@@ -687,22 +575,34 @@ namespace Voy.AvatarHelpers {
 #if CVR_CCK_EXISTS
             CVRAvatar descriptor = _avatar.GetComponent<CVRAvatar>();
 
-            AnimatorController controller = UnityEditor.AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(descriptor.overrides.runtimeAnimatorController));
+            if (descriptor.overrides != null)
+            {
+                _hasController = true;
+                AnimatorController controller =
+                    UnityEditor.AssetDatabase.LoadAssetAtPath<AnimatorController>(
+                        AssetDatabase.GetAssetPath(descriptor.overrides.runtimeAnimatorController));
 
-            IEnumerable<AnimatorControllerLayer> layers = controller.layers.Where(l => l != null);
-            IEnumerable<AnimatorStateMachine> statesMachines = layers.Select(l => l.stateMachine).Where(s => s != null);
-            _anyStateTransitions = statesMachines.SelectMany(l => l.anyStateTransitions).Count();
-            IEnumerable<(AnimatorState,string)> states = statesMachines.SelectMany(m => m.states.Select(s => (s.state, m.name+"/"+s.state.name)));
+                IEnumerable<AnimatorControllerLayer> layers = controller.layers.Where(l => l != null);
+                IEnumerable<AnimatorStateMachine> statesMachines =
+                    layers.Select(l => l.stateMachine).Where(s => s != null);
+                _anyStateTransitions = statesMachines.SelectMany(l => l.anyStateTransitions).Count();
+                IEnumerable<(AnimatorState, string)> states =
+                    statesMachines.SelectMany(m => m.states.Select(s => (s.state, m.name + "/" + s.state.name)));
 
-            _emptyStates = states.Where(s => s.Item1.motion == null).Select(s => s.Item2).ToArray();
+                _emptyStates = states.Where(s => s.Item1.motion == null).Select(s => s.Item2).ToArray();
 
-            IEnumerable<(AnimatorState, string)> wdOn = states.Where(s => s.Item1.writeDefaultValues);
-            IEnumerable<(AnimatorState, string)> wdOff = states.Where(s => !s.Item1.writeDefaultValues);
-            _writeDefault = wdOn.Count() >= wdOff.Count();
-            if (_writeDefault) _writeDefaultoutliers = wdOff.Select(s => s.Item2).ToArray();
-            else _writeDefaultoutliers = wdOn.Select(s => s.Item2).ToArray();
+                IEnumerable<(AnimatorState, string)> wdOn = states.Where(s => s.Item1.writeDefaultValues);
+                IEnumerable<(AnimatorState, string)> wdOff = states.Where(s => !s.Item1.writeDefaultValues);
+                _writeDefault = wdOn.Count() >= wdOff.Count();
+                if (_writeDefault) _writeDefaultoutliers = wdOff.Select(s => s.Item2).ToArray();
+                else _writeDefaultoutliers = wdOn.Select(s => s.Item2).ToArray();
 
-            _layerCount = layers.Count();
+                _layerCount = layers.Count();
+            }
+            else
+            {
+                _hasController = false;
+            }
 #endif
 
             _skinendMeshesWithBlendshapes =  _avatar.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(r => r.sharedMesh != null && r.sharedMesh.blendShapeCount > 0).Select(r => (r, r.sharedMesh.triangles.Length / 3, r.sharedMesh.blendShapeCount)).OrderByDescending(i => i.Item2).ToArray();
@@ -745,14 +645,22 @@ namespace Voy.AvatarHelpers {
 
             if (descriptor != null)
             {
-                AnimatorController controller = UnityEditor.AssetDatabase.LoadAssetAtPath<AnimatorController>(AssetDatabase.GetAssetPath(descriptor.overrides.runtimeAnimatorController));
-
-                IEnumerable<AnimationClip> clips = controller.animationClips.Distinct();
-                foreach (AnimationClip clip in clips)
+                if (descriptor.overrides != null)
                 {
-                    IEnumerable<Material> clipMaterials = AnimationUtility.GetObjectReferenceCurveBindings(clip).Where(b => b.isPPtrCurve && b.type.IsSubclassOf(typeof(Renderer)) && b.propertyName.StartsWith("m_Materials"))
-                        .SelectMany(b => AnimationUtility.GetObjectReferenceCurve(clip, b)).Select(r => r.value as Material);
-                    materialsAll.AddRange(clipMaterials);
+                    AnimatorController controller =
+                        UnityEditor.AssetDatabase.LoadAssetAtPath<AnimatorController>(
+                            AssetDatabase.GetAssetPath(descriptor.overrides.runtimeAnimatorController));
+
+                    IEnumerable<AnimationClip> clips = controller.animationClips.Distinct();
+                    foreach (AnimationClip clip in clips)
+                    {
+                        IEnumerable<Material> clipMaterials = AnimationUtility.GetObjectReferenceCurveBindings(clip)
+                            .Where(b => b.isPPtrCurve && b.type.IsSubclassOf(typeof(Renderer)) &&
+                                        b.propertyName.StartsWith("m_Materials"))
+                            .SelectMany(b => AnimationUtility.GetObjectReferenceCurve(clip, b))
+                            .Select(r => r.value as Material);
+                        materialsAll.AddRange(clipMaterials);
+                    }
                 }
             }
 
