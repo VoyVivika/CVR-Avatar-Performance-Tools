@@ -2,9 +2,7 @@
 These are Utilities to aid you in Optimizing your ChilloutVR Avatars!
 The Primary Purpose of this Utility is to show you Important Metrics which can effect Performance.
 
-This Project is Created by [VoyVivika](https://linktr.ee/voyvivika).
-
-This Project builds off of [Thryrallo's VRC Avatar Performance Tools v1.3.6](https://github.com/Thryrallo/VRC-Avatar-Performance-Tools)
+This Project is Created by [VoyVivika](https://linktr.ee/voyvivika) based Heavily on [Thryrallo's VRC Avatar Performance Tools v1.3.6](https://github.com/Thryrallo/VRC-Avatar-Performance-Tools)
 Use Thryrallo's Utility if you are Creating an Avatar for VRChat and not ChilloutVR.
 
 ## Avatar Evaluator
